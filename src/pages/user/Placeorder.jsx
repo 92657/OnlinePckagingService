@@ -92,7 +92,7 @@ const PlaceOrder = () => {
           type="submit"
           className="bg-[#2563EB] px-4 py-2 rounded-md hover:bg-[#1E40AF] text-sm"
         >
-          Submit Order
+          Submit Order 
         </button>
       </form>
     </div>
