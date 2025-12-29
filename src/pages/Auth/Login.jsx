@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase/Firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 
 const Login = () => {
@@ -47,6 +47,12 @@ const Login = () => {
             Login
           </button>
         </form>
+        <p className="text-sm mt-4 text-center">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );
