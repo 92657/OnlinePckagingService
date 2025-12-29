@@ -20,9 +20,9 @@ import UserOrder from "../pages/user/Userorder";
 import PlaceOrder from "../pages/user/Placeorder";
 import UserProducts from "../pages/user/Userproducts";
 
-const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/login" replace /> },
-  { path: "/login", element: <Login /> },
+export const router = createBrowserRouter([
+  
+  { path: "/", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <Forget /> },
 
@@ -50,7 +50,3 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
-const AppRoutes = () => <RouterProvider router={router} />;
-
-export default AppRoutes;

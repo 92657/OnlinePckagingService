@@ -1,10 +1,20 @@
 import React from "react";
 import { LogOut, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase/Firebase"; // make sure path is correct
+import { signOut } from "firebase/auth";
 
 const UserNavbar = () => {
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = "/login";
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // sign out from Firebase
+      localStorage.clear(); // optional: clear any local storage data
+      navigate("/"); // navigate to login page
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
   };
 
   return (

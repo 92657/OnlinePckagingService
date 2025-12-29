@@ -1,14 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { useNavigate, Link } from "react-router-dom";
 import { auth, db } from "../../firebase/Firebase";
+import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -19,42 +18,36 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists()) {
-        setError("User data not found");
-        return;
+      // Fetch user role from Firestore
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        if (userData.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+      } else {
+        setError("No user data found!");
       }
-
-      const userData = userDoc.data();
-      console.log("Logged in user:", userData);
-
-      if (userData.role === "admin") navigate("/admin/dashboard");
-      else navigate("/user/dashboard");
     } catch (err) {
-      setError("Invalid email or password");
-      console.log(err);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
-        {error && <p className="text-red-500 text-sm mb-3 text-center">{error}</p>}
-
-        <input type="email" placeholder="Email" className="w-full border p-2 mb-3 rounded" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" className="w-full border p-2 mb-3 rounded" value={password} onChange={e => setPassword(e.target.value)} required />
-
-        <div className="text-right mb-4">
-          <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot Password?</Link>
-        </div>
-
-        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition">Login</button>
-
-        <p className="mt-4 text-sm text-center">
-          Don&apos;t have an account? <Link to="/register" className="text-blue-600 font-medium hover:underline">Register</Link>
-        </p>
-      </form>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 border border-gray-300 rounded" />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border border-gray-300 rounded" />
+          <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition">
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
