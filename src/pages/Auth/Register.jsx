@@ -19,7 +19,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   
-  const SECRET_ADMIN_CODE = "SUPERSECRET123";
+  const SECRET_ADMIN_CODE = "Sandipkumar";
 
   const handleRegister = async (e) => {
     e.preventDefault();
