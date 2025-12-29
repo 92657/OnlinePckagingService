@@ -6,7 +6,7 @@ import {
   ClipboardList,
   Box,
   ChevronLeft,
-} from "lucide-react"; // Using Box icon for Products
+} from "lucide-react";
 
 const UserSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -25,7 +25,7 @@ const UserSidebar = () => {
       transition-all duration-300 relative
       ${isOpen ? "w-64" : "w-20"}`}
     >
-      {/* Collapse button */}
+      {/* Collapse Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="absolute -right-3 top-6 bg-[#0F172A]
@@ -38,7 +38,6 @@ const UserSidebar = () => {
         />
       </button>
 
-      {/* NAV LINKS */}
       <nav className="mt-10 px-2 space-y-1">
         <NavLink to="/user/dashboard" className={linkClass}>
           <Home size={18} />
