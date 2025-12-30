@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { collection, onSnapshot, doc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  doc,
+  deleteDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebase/Firebase";
+import { auth } from "../../firebase/Firebase";
 
 const Userorder = () => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const ordersCollection = collection(db, "orders");
+    if (!auth.currentUser) return;
 
-    // Real-time listener
-    const unsubscribe = onSnapshot(ordersCollection, (snapshot) => {
+    const q = query(
+      collection(db, "orders"),
+      where("userId", "==", auth.currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedOrders = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -19,7 +31,7 @@ const Userorder = () => {
       setOrders(fetchedOrders);
     });
 
-    return () => unsubscribe(); // clean up listener
+    return () => unsubscribe();
   }, []);
 
   const handleDelete = async (id) => {
@@ -27,7 +39,7 @@ const Userorder = () => {
       await deleteDoc(doc(db, "orders", id));
       alert("Order deleted successfully!");
     } catch (error) {
-      console.error("Error deleting order: ", error);
+      console.error("Error deleting order:", error);
       alert("Failed to delete order.");
     }
   };
