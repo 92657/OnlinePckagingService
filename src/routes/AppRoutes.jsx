@@ -19,10 +19,12 @@ import UserDashboard from "../pages/user/Userdashboard";
 import UserOrder from "../pages/user/Userorder";
 import PlaceOrder from "../pages/user/Placeorder";
 import UserProducts from "../pages/user/Userproducts";
+import Home from "../pages/Home";
 
 export const router = createBrowserRouter([
   
-  { path: "/", element: <Login /> },
+  { path: "/", element: <Home/> },
+  {path:"/login",element:<Login/>},
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <Forget /> },
 

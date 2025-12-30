@@ -11,7 +11,7 @@ const UserNavbar = () => {
     try {
       await signOut(auth); // sign out from Firebase
       localStorage.clear(); // optional: clear any local storage data
-      navigate("/"); // navigate to login page
+      navigate("/login"); // navigate to login page
     } catch (error) {
       console.error("Logout Error:", error);
     }

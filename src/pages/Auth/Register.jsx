@@ -66,9 +66,8 @@ const Register = () => {
         company,
         role: userRole,
       });
-
       setLoading(false);
-      navigate("/"); // Redirect to login
+      navigate("/login"); // Redirect to login
     } catch (err) {
       setLoading(false);
       setError(err.message);
@@ -153,7 +152,7 @@ const Register = () => {
         </form>
         <p className="text-sm mt-4 text-center">
           Already have an account?{" "}
-          <Link to="/" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-blue-600 hover:underline">
             Login here
           </Link>
         </p>
