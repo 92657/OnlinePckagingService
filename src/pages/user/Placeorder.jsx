@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../../firebase/Firebase"; // Firebase Firestore
+import { db, auth } from "../../firebase/Firebase"; // 🔥 import auth
 import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
 
-  // Form state
   const [product, setProduct] = useState("");
   const [quantity, setQuantity] = useState("");
   const [address, setAddress] = useState("");
 
-  // List of available products
   const products = [
     "Small Box",
     "Medium Box",
@@ -24,6 +22,12 @@ const PlaceOrder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 🔴 HARD CHECK
+    if (!auth.currentUser) {
+      alert("Please login to place an order");
+      return;
+    }
+
     if (!product || !quantity || !address) {
       alert("Please fill all fields!");
       return;
@@ -31,8 +35,9 @@ const PlaceOrder = () => {
 
     try {
       await addDoc(collection(db, "orders"), {
+        userId: auth.currentUser.uid,   // 🔥 REQUIRED BY RULES
         product,
-        quantity,
+        quantity: Number(quantity),
         address,
         status: "pending",
         createdAt: serverTimestamp(),
@@ -40,14 +45,13 @@ const PlaceOrder = () => {
 
       alert("Order placed successfully!");
 
-      // Reset form
       setProduct("");
       setQuantity("");
       setAddress("");
 
-      navigate("/user/orders"); // redirect to orders page
+      navigate("/user/orders");
     } catch (error) {
-      console.error("Error adding order: ", error);
+      console.error("Error adding order:", error);
       alert("Failed to place order.");
     }
   };
@@ -57,7 +61,6 @@ const PlaceOrder = () => {
       <h2 className="text-lg font-semibold mb-4">Place New Order</h2>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {/* Product Dropdown */}
         <select
           value={product}
           onChange={(e) => setProduct(e.target.value)}
@@ -71,7 +74,6 @@ const PlaceOrder = () => {
           ))}
         </select>
 
-        {/* Quantity Input */}
         <input
           type="number"
           placeholder="Quantity"
@@ -80,7 +82,6 @@ const PlaceOrder = () => {
           className="w-full bg-[#020617] border border-slate-700 rounded-md px-3 py-2 text-sm"
         />
 
-        {/* Address Input */}
         <textarea
           placeholder="Delivery Address"
           value={address}

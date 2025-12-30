@@ -47,7 +47,7 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <UserDashboard /> },
       { path: "place-order", element: <PlaceOrder /> },
       { path: "orders", element: <UserOrder /> },
-      { path: "products", element: <UserProducts /> },
+      { path: "userproducts", element: <UserProducts /> },
       { path: "", element: <Navigate to="/user/dashboard" replace /> },
     ],
   },
