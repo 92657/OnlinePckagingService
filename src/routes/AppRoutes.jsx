@@ -9,10 +9,9 @@ import Forget from "../pages/Auth/Forget";
 // Admin pages
 import AdminLayout from "../components/layout/Adminayout";
 import Dashboard from "../pages/admin/Dashboard";
-import Order from "../pages/admin/Order"
-import Teams from "../pages/admin/Teams"
-import Report from "../pages/admin/Report"
-
+import Order from "../pages/admin/Order";
+import Teams from "../pages/admin/Teams";
+import Report from "../pages/admin/Report";
 
 // User pages
 import UserLayout from "../pages/user/Userlayout";
@@ -21,9 +20,9 @@ import UserOrder from "../pages/user/Userorder";
 import PlaceOrder from "../pages/user/Placeorder";
 import UserProducts from "../pages/user/Userproducts";
 
-const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/login" replace /> },
-  { path: "/login", element: <Login /> },
+export const router = createBrowserRouter([
+  
+  { path: "/", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <Forget /> },
 
@@ -33,9 +32,8 @@ const router = createBrowserRouter([
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "order", element: <Order /> },
-      { path: "teams", element: <Teams/> },
-      { path: "reports", element: <Report/> },
-      
+      { path: "teams", element: <Teams /> },
+      { path: "reports", element: <Report /> },
       { path: "", element: <Navigate to="/admin/dashboard" replace /> },
     ],
   },
@@ -52,6 +50,3 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
-const AppRoutes = () => <RouterProvider router={router} />;
-export default AppRoutes;

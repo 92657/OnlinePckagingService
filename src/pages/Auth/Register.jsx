@@ -1,8 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/Firebase";
+import { useNavigate, Link } from "react-router-dom";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
@@ -11,80 +11,153 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("user"); // Default user
+  const [role, setRole] = useState("user"); // default role
+  const [adminCode, setAdminCode] = useState(""); // for admin registration
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  
+  const SECRET_ADMIN_CODE = "Sandipkumar";
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (!fullName || !email || !password || !confirmPassword) {
+      setError("Please fill in all required fields.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
+    }
+
+    // Determine user role safely
+    let userRole = "user"; // default
+    if (role === "admin") {
+      if (adminCode !== SECRET_ADMIN_CODE) {
+        setError("Invalid admin code!");
+        return;
+      } else {
+        userRole = "admin";
+      }
     }
 
     try {
       setLoading(true);
+
+      // 1. Create user with Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // 2. Update display name
       await updateProfile(user, { displayName: fullName });
 
-      await setDoc(doc(db, "users", user.uid), {
+      // 3. Save extra user data to Firestore
+      const usersRef = collection(db, "users");
+      const userDocRef = doc(usersRef, user.uid);
+      await setDoc(userDocRef, {
         fullName,
-        company,
-        phone,
         email,
-        role,
-        createdAt: new Date(),
+        phone,
+        company,
+        role: userRole,
       });
 
-      setSuccess("Account created successfully! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1500);
-    } catch (err) {
-      if (err.code === "auth/email-already-in-use") setError("Email already registered");
-      else setError(err.message);
-    } finally {
       setLoading(false);
+      navigate("/"); // Redirect to login
+    } catch (err) {
+      setLoading(false);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Create Account</h2>
-        {error && <p className="text-red-500 text-sm mb-2 text-center">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-2 text-center">{success}</p>}
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleRegister} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Company Name"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Phone Number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
 
-        <input className="w-full border p-2 mb-3 rounded" placeholder="Full Name" value={fullName} onChange={e => setFullName(e.target.value)} required />
-        <input className="w-full border p-2 mb-3 rounded" placeholder="Company Name" value={company} onChange={e => setCompany(e.target.value)} />
-        <input className="w-full border p-2 mb-3 rounded" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} />
-        <select className="w-full border p-2 mb-3 rounded" value={role} onChange={e => setRole(e.target.value)}>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-        <input className="w-full border p-2 mb-3 rounded" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input className="w-full border p-2 mb-3 rounded" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <input className="w-full border p-2 mb-4 rounded" placeholder="Confirm Password" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
 
-        <button disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50">
-          {loading ? "Creating Account..." : "Register"}
-        </button>
+          {role === "admin" && (
+            <input
+              type="text"
+              placeholder="Enter Admin Code"
+              value={adminCode}
+              onChange={(e) => setAdminCode(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          )}
 
-        <p className="text-center mt-3 text-sm">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </form>
+        <p className="text-sm mt-4 text-center">
+          Already have an account?{" "}
+          <Link to="/" className="text-blue-600 hover:underline">
+            Login here
+          </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 };

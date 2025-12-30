@@ -20,7 +20,7 @@ const Navbar = () => {
       await signOut(auth); // Firebase logout
       localStorage.removeItem("isLoggedIn"); // optional
       setIsLoggedIn(false);
-      navigate("/login"); // redirect to login page
+      navigate("/"); // redirect to login page
     } catch (err) {
       console.log("Logout failed:", err);
     }
