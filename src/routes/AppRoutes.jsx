@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 // Auth pages
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
-import Forget from "../pages/Auth/Forget";
+
 
 // Admin pages
 import AdminLayout from "../components/layout/Adminayout";
@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
   { path: "/", element: <Home/> },
   {path:"/login",element:<Login/>},
   { path: "/register", element: <Register /> },
-  { path: "/forgot-password", element: <Forget /> },
+ 
 
   {
     path: "/admin",
