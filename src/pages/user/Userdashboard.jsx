@@ -27,9 +27,8 @@ const UserDashboard = () => {
   const pendingOrders = orders.filter(order => order.status === "pending").length;
   const deliveredOrders = orders.filter(order => order.status === "delivered").length;
 
-  
-   return (
-  <div className="min-h-screen w-full bg-[#020B1A] px-3 py-4 sm:px-5 sm:py-5 md:px-6 md:py-6 lg:px-8 rounded-none md:rounded-2xl space-y-6">
+  return (
+    <div className="space-y-6">
       {/* Welcome Card */}
       <div className="bg-[#0F172A] p-6 rounded-xl border border-slate-800">
         <h2 className="text-xl font-semibold mb-1">
