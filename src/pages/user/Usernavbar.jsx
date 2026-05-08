@@ -1,43 +1,45 @@
 import React from "react";
-import { LogOut, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase/Firebase"; // make sure path is correct
+import { Menu, LogOut } from "lucide-react";
 import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/Firebase";
+import { useNavigate } from "react-router-dom";
 
-const UserNavbar = () => {
+const UserNavbar = ({ setSidebarOpen }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth); // sign out from Firebase
-      localStorage.clear(); // optional: clear any local storage data
-      navigate("/login"); // navigate to login page
-    } catch (error) {
-      console.error("Logout Error:", error);
-    }
+    await signOut(auth);
+    navigate("/login");
   };
 
   return (
-    <nav className="h-16 bg-[#0F172A] border-b border-slate-800 flex items-center justify-between px-6">
-      <h1 className="text-sm md:text-base font-semibold tracking-wide">
-        User Dashboard
-      </h1>
-
+    <header className="h-16 border-b border-slate-800 bg-[#020617] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+      
+      {/* Left */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 text-slate-300 text-sm">
-          <User size={16} />
-          <span>Welcome</span>
-        </div>
-
+        
+        {/* Mobile Menu Button */}
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 bg-[#2563EB] px-4 py-1.5 rounded-md text-sm hover:bg-[#1E40AF] transition"
+          onClick={() => setSidebarOpen(true)}
+          className="md:hidden text-slate-200"
         >
-          <LogOut size={16} />
-          Logout
+          <Menu size={24} />
         </button>
+
+        <h1 className="text-lg sm:text-xl font-semibold text-white">
+          User Dashboard
+        </h1>
       </div>
-    </nav>
+
+      {/* Right */}
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg text-sm font-medium"
+      >
+        <LogOut size={18} />
+        Logout
+      </button>
+    </header>
   );
 };
 

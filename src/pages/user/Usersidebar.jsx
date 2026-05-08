@@ -1,65 +1,100 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
-  Home,
+  LayoutDashboard,
   Package,
   ClipboardList,
-  Box,
-  ChevronLeft,
+  Truck,
+  X,
 } from "lucide-react";
 
-const UserSidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
+const UserSidebar = ({ sidebarOpen, setSidebarOpen }) => {
+  const location = useLocation();
 
-  const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 p-3 rounded-md text-sm font-medium transition
-    ${
-      isActive
-        ? "bg-[#1E293B] text-white border-l-4 border-[#2563EB]"
-        : "text-slate-300 hover:bg-[#1E293B]"
-    }`;
-
+ const menuItems = [
+  {
+    name: "Dashboard",
+    path: "/user/dashboard",
+    icon: <LayoutDashboard size={20} />,
+  },
+  {
+    name: "Products",
+    path: "/user/userproducts",
+    icon: <Package size={20} />,
+  },
+  {
+    name: "Place Order",
+    path: "/user/place-order",
+    icon: <ClipboardList size={20} />,
+  },
+  {
+    name: "My Orders",
+    path: "/user/orders",
+    icon: <Truck size={20} />,
+  },
+];
   return (
-    <aside
-      className={`bg-[#0F172A] border-r border-slate-800
-      transition-all duration-300 relative
-      ${isOpen ? "w-64" : "w-20"}`}
-    >
-      {/* Collapse Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="absolute -right-3 top-6 bg-[#0F172A]
-        border border-slate-700 rounded-full p-1
-        hover:bg-slate-800 transition"
-      >
-        <ChevronLeft
-          size={18}
-          className={`${!isOpen && "rotate-180"} transition`}
+    <>
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
         />
-      </button>
+      )}
 
-      <nav className="mt-10 px-2 space-y-1">
-        <NavLink to="/user/dashboard" className={linkClass}>
-          <Home size={18} />
-          {isOpen && <span>Dashboard</span>}
-        </NavLink>
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 z-50 h-screen w-64 bg-[#0F172A]
+          border-r border-slate-800
+          transform transition-transform duration-300
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 md:static md:flex
+          flex flex-col
+        `}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-slate-800">
+          <h2 className="text-xl font-bold text-white">
+            User Panel
+          </h2>
 
-        <NavLink to="/user/place-order" className={linkClass}>
-          <Package size={18} />
-          {isOpen && <span>Place Order</span>}
-        </NavLink>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden text-slate-300"
+          >
+            <X size={22} />
+          </button>
+        </div>
 
-        <NavLink to="/user/orders" className={linkClass}>
-          <ClipboardList size={18} />
-          {isOpen && <span>My Orders</span>}
-        </NavLink>
+        {/* Menu */}
+        <nav className="flex-1 p-4 space-y-2">
+          {menuItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
 
-        <NavLink to="/user/userproducts" className={linkClass}>
-          <Box size={18} />
-          {isOpen && <span>Products</span>}
-        </NavLink>
-      </nav>
-    </aside>
+            return (
+              <Link
+                key={index}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`
+                  flex items-center gap-3 px-4 py-3 rounded-xl transition
+                  ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-300 hover:bg-slate-800"
+                  }
+                `}
+              >
+                {item.icon}
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 };
 
