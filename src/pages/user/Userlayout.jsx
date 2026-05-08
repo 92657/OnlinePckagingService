@@ -3,16 +3,21 @@ import { Outlet } from "react-router-dom";
 import UserNavbar from "./Usernavbar";
 import UserSidebar from "./Usersidebar";
 
-
 const UserLayout = () => {
   return (
-    <div className="flex min-h-screen bg-[#020617] text-slate-200">
-      <UserSidebar/>
+    <div className="min-h-screen w-full bg-[#020B1A] text-slate-200 overflow-x-hidden flex">
+      
+      {/* Sidebar */}
+      <UserSidebar />
 
-      <div className="flex-1 flex flex-col">
-        <UserNavbar/>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#020B1A]">
+        
+        {/* Navbar */}
+        <UserNavbar />
 
-        <main className="p-6">
+        {/* Page Content */}
+        <main className="flex-1 w-full bg-[#020B1A] p-3 sm:p-4 md:p-6 overflow-x-hidden">
           <Outlet />
         </main>
       </div>
