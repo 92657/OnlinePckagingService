@@ -8,52 +8,70 @@ import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [user, setUser] = useState(null);
+
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+
       setLoading(false);
-      if (!currentUser) navigate("/login", { replace: true });
+
+      if (!currentUser) {
+        navigate("/login", { replace: true });
+      }
     });
+
     return () => unsubscribe();
   }, [navigate]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Checking authentication...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
+        Checking authentication...
+      </div>
+    );
+  }
+
   if (!user) return null;
 
   return (
-    <>
+    <div className="min-h-screen bg-[#020617] text-slate-200 overflow-x-hidden">
+      
+      {/* Navbar */}
       <Navbar
+        toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         onLogout={async () => {
           await signOut(auth);
           navigate("/login");
         }}
       />
 
-      <div className="pt-16 min-h-screen bg-[#F8FAFC]">
-        <Sidebar
-          isOpen={sidebarOpen}
-          toggle={() => setSidebarOpen(!sidebarOpen)}
-        />
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        toggle={() => setSidebarOpen(false)}
+      />
 
-        <main
-          className={`p-6 transition-all duration-300 pb-14
-          ${sidebarOpen ? "ml-64" : "ml-20"}`}
-        >
-          <Outlet /> {/* Renders child routes like /dashboard */}
-        </main>
+      {/* Main Content */}
+      <main
+        className={`
+          pt-20 px-4 sm:px-6 pb-16 transition-all duration-300
+          min-h-screen bg-[#020617]
+          ${sidebarOpen ? "md:ml-64" : "md:ml-0"}
+        `}
+      >
+        <Outlet />
+      </main>
 
-        <Footer
-          className="fixed bottom-0 left-0 z-40
-            bg-white border-t border-slate-200
-            text-slate-500 text-sm py-3"
-        />
-      </div>
-    </>
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 };
 
